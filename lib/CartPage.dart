@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hello/models/Product.dart';
+import 'package:hello/widgets/AddressCell.dart';
+import 'package:hello/widgets/EntregaJustaCell.dart';
+import 'package:hello/widgets/ProductCell.dart';
 
 class CartPage extends StatelessWidget {
 
@@ -15,7 +18,14 @@ class CartPage extends StatelessWidget {
         title: Text('Meu Carrinho'),
       ),
       body: Center(
-        child: Text(product.name),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget> [
+          ProductCell(product),
+          AddressCell(),
+          EntregaJustaCell(),
+          ],
+        )
       ),
     );
   }

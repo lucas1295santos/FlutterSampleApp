@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello/models/Product.dart';
 import 'package:hello/CartPage.dart';
+import 'package:hello/widgets/ImageFactory.dart';
 
 class DetailsPage extends StatelessWidget {
 
@@ -21,7 +22,7 @@ class DetailsPage extends StatelessWidget {
           Expanded(
             child: FittedBox(
               fit: BoxFit.contain,
-              child: const FlutterLogo(),
+              child: image(ImageType.cell),
             ),
           ),
           Text(product.description),

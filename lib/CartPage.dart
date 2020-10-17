@@ -23,7 +23,7 @@ class CartPage extends StatelessWidget {
           children: <Widget> [
           ProductCell(product),
           AddressCell(),
-          EntregaJustaCell(),
+          EntregaJustaCell(product),
           ],
         )
       ),

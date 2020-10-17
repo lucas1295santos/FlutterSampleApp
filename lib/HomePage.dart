@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hello/DetailsPage.dart';
 import 'package:hello/models/Product.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -13,37 +15,37 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController editingController = TextEditingController();
 
-  final duplicateItems = List<Product>.generate(10000, (i) => Product(1, 1, 'Produto $i', 'categoria', 'descrição', 10.00, 1.00));
-  var items = List<Product>();
+  Future<List<Product>> duplicateItems;
+  // var items = List<Product>();
 
   @override
   void initState() {
-    items.addAll(duplicateItems);
+    duplicateItems = fetch();
     super.initState();
   }
 
-  void filterSearchResults(String query) {
-    List<Product> dummySearchList = List<Product>();
-    dummySearchList.addAll(duplicateItems);
-    if(query.isNotEmpty) {
-      List<Product> dummyListData = List<Product>();
-      dummySearchList.forEach((item) {
-        if(item.name.contains(query)) {
-          dummyListData.add(item);
-        }
-      });
-      setState(() {
-        items.clear();
-        items.addAll(dummyListData);
-      });
-      return;
-    } else {
-      setState(() {
-        items.clear();
-        items.addAll(duplicateItems);
-      });
-    }
-  }
+  // void filterSearchResults(String query) {
+  //   List<Product> dummySearchList = List<Product>();
+  //   dummySearchList.addAll(duplicateItems);
+  //   if(query.isNotEmpty) {
+  //     List<Product> dummyListData = List<Product>();
+  //     dummySearchList.forEach((item) {
+  //       if(item.name.contains(query)) {
+  //         dummyListData.add(item);
+  //       }
+  //     });
+  //     setState(() {
+  //       items.clear();
+  //       items.addAll(dummyListData);
+  //     });
+  //     return;
+  //   } else {
+  //     setState(() {
+  //       items.clear();
+  //       items.addAll(duplicateItems);
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 onChanged: (value) {
-                  filterSearchResults(value);
+                  // filterSearchResults(value);
                 },
                 controller: editingController,
                 decoration: InputDecoration(
@@ -70,26 +72,50 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('${items[index].name}'),
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        DetailsPage.routeName,
-                        arguments: items[index],
-                      );
-                    }
-                  );
+              child: FutureBuilder(
+                future: duplicateItems,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return tableView(snapshot.data);
+                  } else {
+                    return CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue));
+                  }
                 },
-              ),
+              )
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget tableView(List<Product> items) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text('${items[index].name}'),
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              DetailsPage.routeName,
+              arguments: items[index],
+            );
+          }
+        );
+      },
+    );
+  }
+
+  Future<List<Product>> fetch() async {
+    final response = await http.get('https://radiant-woodland-47818.herokuapp.com/products');
+    if(response.statusCode == 200) {
+      final List prs = json.decode(response.body);
+      final List<Product> p = prs.map((item) => Product.fromJson(item)).toList();
+      return p;
+    } else {
+      throw Exception('Failed to load');
+    }
   }
 }

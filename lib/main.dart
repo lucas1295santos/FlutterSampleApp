@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello/CartPage.dart';
 import 'package:hello/DetailsPage.dart';
+import 'package:hello/PurchaseConfirmationPage.dart';
 import './HomePage.dart';
 void main() => runApp(new MyApp());
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => MyHomePage(),
         '/details': (BuildContext context) => DetailsPage(),
         '/cart': (BuildContext context) => CartPage(),
+        '/purchase': (BuildContext context) => PurchaseConfirmationPage(),
       },
     );
   }
